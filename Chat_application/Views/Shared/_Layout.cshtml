@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Antohi Marian</title>
+
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <!-- SignalR-->
+    <script src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        
+        <div class="container">
+            
+            <div class="navbar-header">
+                <img src="~/Image/kissclipart-solid-contact-and-communication-elements-icon-chat-957eb27f2b984020.png" alt="" class="logo" />
+                <a class="title" href="/" style="font-size: 25px; color: #e38968;font-family: Magneto">Chat application</a>
+            </div>
+            <div class="dl-horizontal">
+                <ul class=" nav nav-bar navbar-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a href="#" style="color:azure"><span class="glyphicon glyphicon-user"></span> @GetUsername(int.Parse(User.Identity.Name))</a></li>
+                        <li><a href="@Url.Action("Logout", "Home")" style="color: azure"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Logout</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @RenderBody()
+    </div>
+
+
+</body>
+</html>
+
+@functions{
+    ChatAppDBEntities1 _Context = new ChatAppDBEntities1();
+    public string GetUsername(int userId)
+    {
+        return _Context.Users.FirstOrDefault(x => x.UserId == userId)?.FullName;
+    }
+}

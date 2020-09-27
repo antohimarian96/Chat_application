@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "Chat";
+}
+
+<div class="row">
+    
+    <div class="col-xs-3">
+        <div class="body-content">
+            <div class="search">
+                <input class="searchText" type="text" placeholder="Search" style="width:70%; margin-left: 12.5%; border-radius:20px; border:currentcolor; padding-left:10px"/>
+                <i class="fa fa-search"></i>
+            </div>
+        <div class="users-list">
+            <!-- users list goes here -->
+        </div>
+    </div>
+    </div>
+    <div class="col-xs-8">
+        <div class="chat-container">
+            <!-- chat box goes here -->
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    $(function () {
+        var hub = $.connection.chatHub;
+
+        hub.client.broadcastUsersToChat = function (listUsers) {
+            $('.users-list').html('');
+            for (var i = 0; i < listUsers.length; i++) {
+                let online = listUsers[i].IsOnline ? '<i class="fa fa-circle"></i>' : "";
+                if ($('.searchText') != null && $('.searchText') == listUsers[i].FullName && $('.searchText') != "Search")
+               {
+                    $('.users-list').append('<div id="UserBox-' + listUsers[i].UserId + '" class="user-box" onclick="openChatBox(' + listUsers[i].UserId + ')">\
+                <h4>'+ listUsers[i].FullName + '</h4>\
+                <span class="is-online">'+ online + '</span>\
+            </div>');
+                }
+            }
+        };
+
+        hub.client.broadcastOnlineUser = function (userId) {
+            $('.users-list').find('#UserBox-' + userId + '').find('span[class="is-online"]').html('<i class="fa fa-circle online"></i>');
+        }
+
+        hub.client.broadcastOfflineUser = function (userId) {
+            $('.users-list').find('#UserBox-' + userId + '').find('span[class="is-online"]').html('');
+        }
+
+        hub.connection.start().done(function () {
+                hub.server.getUsersToChat();
+        });
+
+        hub.client.broadcastRecieveMessage = function (userId, message) {
+            if ($('#DVChatBox-' + userId).length === 0) {
+                openChatBox(userId);
+            } else {
+                $('#DVChatBox-' + userId).find('.messages-list').append('<div class="dvmsg dvmsg-to"><span class="msg">' + message + '</span></div>');
+            }
+            $('#DVChatBox-' + userId).find('.messages-list').scrollTop(999999999999);
+        }
+    });
+
+
+    function openChatBox(toUserId) {
+        $.ajax({
+            url: '/Home/GetChatbox',
+            type: 'POST',
+            datatype: 'JSON',
+            contentType: 'application/json;charset=utf-8;',
+            data: JSON.stringify({ toUserId: toUserId }),
+            async: true,
+            success: function (res) {
+                if ($('#DVChatBox-' + toUserId).length === 0) {
+                    $('.chat-container').append(res);
+                } else {
+                    $('.chat-container').find('#DVChatBox-' + toUserId).replaceWith(res);
+                }
+                $('#DVChatBox-' + toUserId).find('.messages-list').scrollTop(999999999999);
+            }
+        });
+    }
+</script>
