@@ -33,13 +33,10 @@
             $('.users-list').html('');
             for (var i = 0; i < listUsers.length; i++) {
                 let online = listUsers[i].IsOnline ? '<i class="fa fa-circle"></i>' : "";
-                if ($('.searchText') != null && $('.searchText') == listUsers[i].FullName && $('.searchText') != "Search")
-               {
                     $('.users-list').append('<div id="UserBox-' + listUsers[i].UserId + '" class="user-box" onclick="openChatBox(' + listUsers[i].UserId + ')">\
                 <h4>'+ listUsers[i].FullName + '</h4>\
                 <span class="is-online">'+ online + '</span>\
             </div>');
-                }
             }
         };
 
